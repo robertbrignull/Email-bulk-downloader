@@ -54,26 +54,25 @@ if len(mailboxes) > 0:
                 date = email.utils.parsedate_tz(msg['Date'])
                 filename_prefix = num + '_' + str(date[0]) + '-' + str(date[1]).zfill(2) + '-' + str(date[2]).zfill(2)
                 filename = make_filename_safe(filename_prefix + '_' + msg['Subject'] + '.eml')
-                out_file = open(os.path.join(output_dir, filename), 'w')
-                out_file.write("From: {0}\n".format(msg['From']))
-                out_file.write("To: {0}\n".format(msg['To']))
-                out_file.write("Subject: {0}\n".format(msg['Subject']))
+                with open(os.path.join(output_dir, filename), 'w') as out_file:
+                    out_file.write("From: {0}\n".format(msg['From']))
+                    out_file.write("To: {0}\n".format(msg['To']))
+                    out_file.write("Subject: {0}\n".format(msg['Subject']))
 
-                for part in msg.walk():
-                    if part.get_content_maintype() == 'multipart':
-                        continue
+                    for part in msg.walk():
+                        if part.get_content_maintype() == 'multipart':
+                            continue
 
-                    if part.get_content_type() == 'text/plain':
-                        out_file.write("\n\n")
-                        out_file.write(part.as_string())
+                        if part.get_content_type() == 'text/plain':
+                            out_file.write("\n\n")
+                            out_file.write(part.as_string())
 
-                    if part.get_filename() != None:
-                        filePath = os.path.join(output_dir, filename_prefix + '_' + make_filename_safe(part.get_filename()))
-                        attachment_file = open(filePath, 'wb')
-                        attachment_file.write(part.get_payload(decode=True))
-                        attachment_file.close()
+                        if part.get_filename() != None:
+                            filePath = os.path.join(output_dir, filename_prefix + '_' +make_filename_safe(part.get_filename()))
+                            with open(filePath, 'wb') as attachment_file:
+                                attachment_file.write(part.get_payload(decode=True))
+                                attachment_file.close()
 
-                out_file.close()
             else:
                 print "ERROR getting message {0}".format(num)
 
