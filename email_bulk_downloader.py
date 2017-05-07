@@ -6,7 +6,6 @@ import imaplib
 import getpass
 import email
 import email.header
-import datetime
 
 def make_filename_safe(filename):
     return filename.replace('\0', '').replace('/', '_')
